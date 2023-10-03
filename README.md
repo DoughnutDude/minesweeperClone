@@ -1,6 +1,6 @@
 ## Minesweeper Clone
 
-![(Minesweeper Clone)](minesweeper-clone\screenshots\screenshot001.png "Minesweeper Clone")
+![(Minesweeper Clone)](./minesweeper-clone/screenshots/screenshot001.png "Minesweeper Clone")
 
 ### Description
 
@@ -42,7 +42,7 @@ _TODO: Show your game to the world, animated GIFs recommended!._
 
 ### License
 
-This game sources are licensed under an unmodified zlib/libpng license, which is an OSI-certified, BSD-like license that allows static linking with closed source software. Check [LICENSE](.\minesweeper-clone\LICENSE) for further details.
+This game sources are licensed under an unmodified zlib/libpng license, which is an OSI-certified, BSD-like license that allows static linking with closed source software. Check [LICENSE](./minesweeper-clone/LICENSE) for further details.
 
 $(Additional Licenses)
 
