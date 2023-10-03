@@ -69,8 +69,8 @@ int main(void)
 
     // Load global data (assets that must be available in all screens, i.e. font)
     ChangeDirectory("../../../src");
-    font = LoadFont("resources/Inconsolata-Medium.ttf");
-    //music = LoadMusicStream("resources/ambient.ogg");
+    font = LoadFont("resources/Inconsolata-ExtraBold.ttf");
+    music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
     ChangeDirectory("../projects/VS2022/raylib_game");
 
