@@ -23,6 +23,12 @@
 *
 **********************************************************************************************/
 
+/**********************************************************************************************
+*   Modified from the original software for use in Minesweeper Clone
+*   Copyright (c) 2023 (DoughnutDude)
+**********************************************************************************************/
+
+
 #include "raylib.h"
 #include "screens.h"
 #include "gameplay.h"
@@ -30,21 +36,24 @@
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
-static int framesCounter = 0;
-static int finishScreen = 0;
-static bool winCon;
-static float dt = 0.0f;
+global_var int framesCounter = 0;
+global_var int finishResult = 0;
 
-static int hp = 1;
+global_var bool winCon;
+global_var float dt = 0.0f;
+
+global_var int hp = 1;
 
 Vector2 screenCenter = { 0 };
 Camera2D camera = { 0 };
 Rectangle player = { 0 };
 
+int mineCount = 0;
+int maxMines = 0;
 #define boardHeight 16 // in number of tiles
 #define boardWidth 30
-int board[boardHeight][boardWidth]; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
-int boardMask[boardHeight][boardWidth]; // 0 = hidden, 1 = revealed, 2 = flagged
+int board[boardHeight][boardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
+int boardMask[boardHeight][boardWidth] = { 0 }; // -1 = flagged, 0 = hidden, 1 = revealed
 Rectangle boardRect = { 0 };
 float tileSize = 40.0f;
 Vector2 screenOffset = { 0 };
@@ -53,12 +62,53 @@ int fontSize = 0;
 //----------------------------------------------------------------------------------
 // Gameplay Screen Functions Definition
 //----------------------------------------------------------------------------------
+void GenerateMinesRecursively(int x, int y)
+{
+    if (board[y][x] < 0 || mineCount >= maxMines)
+    {
+        return;
+    }
+    board[y][x] = -1;
+    ++mineCount;
+    for (int offsetY = -1; offsetY < 2; ++offsetY)
+    {
+        for (int offsetX = -1; offsetX < 2; ++offsetX)
+        {
+            if (!((offsetX == 0) && (offsetY == 0)))
+            {
+                int neighborX = x + offsetX;
+                int neighborY = y + offsetY;
+                if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                    (neighborY < boardHeight) && (neighborY >= 0) &&
+                    board[neighborY][neighborX] >= 0)
+                {
+                    ++board[neighborY][neighborX];
+                }
+            }
+        }
+    }
+    int offsetX = GetRandomValue(-1, 2);
+    int offsetY = GetRandomValue(-1, 2);
+    while (((offsetX == 0) && (offsetY == 0)))
+    {
+        offsetX = GetRandomValue(-1, 2);
+        offsetY = GetRandomValue(-1, 2);
+    }
+    int neighborX = x + offsetX;
+    int neighborY = y + offsetY;
+    if ((neighborX < boardWidth) && (neighborX >= 0) &&
+        (neighborY < boardHeight) && (neighborY >= 0))
+    {
+        GenerateMinesRecursively(neighborX, neighborY);
+    }
+}
 
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void)
 {
     framesCounter = 0;
-    finishScreen = 0;
+    finishResult = 0;
+
     winCon = false;
     dt = GetFrameTime();
 
@@ -73,80 +123,96 @@ void InitGameplayScreen(void)
     camera.zoom = 1.0f;
 
     // init board
-    // move into init board function?
+    // TODO: move into init board function?
     screenOffset = (Vector2){ screenCenter.x - (tileSize * boardWidth + boardWidth - 1) / 2.0f,
                               screenCenter.y - (tileSize * boardHeight + boardHeight - 1) / 2.0f };
     boardRect = (Rectangle){ screenOffset.x, screenOffset.y,
                              (tileSize * boardWidth) + boardWidth - 1,
                              (tileSize * boardHeight) + boardHeight - 1 };
     fontSize = 0.8f * (float)tileSize;
+    mineCount = 0;
+    maxMines = 0.21f * (boardWidth * boardHeight);
 
-    //Vector2 randomStartPos = {GetRandomValue(0, boardWidth), GetRandomValue(0, boardHeight)};
+#if 0 // Enable to start with board revealed
     for (int y = 0; y < boardHeight; ++y)
     {
         for (int x = 0; x < boardWidth; ++x)
         {
-            board[y][x] = 0;
-            boardMask[y][x] = 0;
+            boardMask[y][x] = 1;
         }
     }
+#endif
+#if 0
+    int x = GetRandomValue(0, boardWidth-1);// windows had it such that this start pos is closest empty spot to first clicked tile.
+    int y = GetRandomValue(0, boardHeight-1);
+    GenerateMinesRecursively(x, y);
+    while (mineCount < maxMines)
+    {
+        x = GetRandomValue(0, boardWidth - 1);
+        y = GetRandomValue(0, boardHeight - 1);
+        if (board[y][x] >= 0)
+        {
+            board[y][x] = -1;
+            ++mineCount;
+            for (int offsetY = -1; offsetY < 2; ++offsetY)
+            {
+                for (int offsetX = -1; offsetX < 2; ++offsetX)
+                {
+                    if (!((offsetX == 0) && (offsetY == 0)))
+                    {
+                        int neighborX = x + offsetX;
+                        int neighborY = y + offsetY;
+                        if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                            (neighborY < boardHeight) && (neighborY >= 0) &&
+                            board[neighborY][neighborX] >= 0)
+                        {
+                            ++board[neighborY][neighborX];
+                        }
+                    }
+                }
+            }
+        }
+    }
+#else
     for (int y = 0; y < boardHeight; ++y)
     {
         for (int x = 0; x < boardWidth; ++x)
         {
-            //TODO: This can get the correct mine density,
-            // but needs to be modified so that first touch is gauranteed safe, 
+            //TODO: This can get the correct mine density(20%),
+            // but needs to be modified so that first click is gauranteed safe, 
             // and also parameterized for the possibility of no-guess mode.
             int randVal = GetRandomValue(0,5);
             if (!randVal) {
-                if (x < boardWidth - 1)
+                for (int offsetY = -1; offsetY < 2; ++offsetY)
                 {
-                    if (board[y][x + 1] >= 0)
+                    for (int offsetX = -1; offsetX < 2; ++offsetX)
                     {
-                        ++(board[y][x + 1]);//east
-                    }
-                    if ((y > 0) && (board[y - 1][x + 1] >= 0))
-                    {
-                        ++(board[y - 1][x + 1]);//north-east
-                    }
-                }
-                if (x > 0)
-                {
-                    if (board[y][x - 1] >= 0)
-                    {
-                        ++(board[y][x - 1]);//west
-                    }
-                    if ((y < boardHeight - 1) && (board[y + 1][x - 1] >= 0))
-                    {
-                        ++(board[y + 1][x - 1]);//south-west
-                    }
-                }
-                if (y < boardHeight - 1)
-                {
-                    if (board[y + 1][x] >= 0)
-                    {
-                        ++(board[y + 1][x]);//south
-                    }
-                    if ((x < boardWidth - 1) && (board[y + 1][x + 1] >= 0))
-                    {
-                        ++(board[y+1][x + 1]);//south-east
-                    }
-                }
-                if (y > 0)
-                {
-                    if (board[y - 1][x] >= 0)
-                    {
-                        ++(board[y - 1][x]);//north
-                    }
-                    if ((x > 0) && (board[y-1][x - 1] >= 0))
-                    {
-                        ++(board[y-1][x - 1]);//north-west
+                        if (!((offsetX == 0) && (offsetY == 0)))
+                        {
+                            int neighborX = x + offsetX;
+                            int neighborY = y + offsetY;
+                            if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                                (neighborY < boardHeight) && (neighborY >= 0) &&
+                                board[neighborY][neighborX] >= 0)
+                            {
+                                ++board[neighborY][neighborX];
+                            }
+                        }
                     }
                 }
                 board[y][x] = -1;
             }
         }
     }
+#endif
+}
+
+Rectangle MakeRectFromTile(int x, int y)
+{
+    Rectangle result = { x * tileSize + x + screenOffset.x,
+                                   y * tileSize + y + screenOffset.y,
+                                   tileSize, tileSize };
+    return result;
 }
 
 void FloodFillClearTilesRecursively(int x, int y)
@@ -157,6 +223,25 @@ void FloodFillClearTilesRecursively(int x, int y)
 
         if (board[y][x] > 0) return;
 
+#if 1
+        for (int offsetY = -1; offsetY < 2; ++offsetY)
+        {
+            for (int offsetX = -1; offsetX < 2; ++offsetX)
+            {
+                if (!((offsetX == 0) && (offsetY == 0)))
+                {
+                    int neighborX = x + offsetX;
+                    int neighborY = y + offsetY;
+                    if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                        (neighborY < boardHeight) && (neighborY >= 0) &&
+                        (boardMask[neighborY][neighborX] == 0 || (board[neighborY][neighborX] >= 0)))
+                    {
+                        FloodFillClearTilesRecursively(neighborX, neighborY);
+                    }
+                }
+            }
+        }
+#else //just the same thing, but with if-else's instead of loops
         if (x < boardWidth)
         {
             FloodFillClearTilesRecursively(x + 1, y);//east
@@ -190,6 +275,7 @@ void FloodFillClearTilesRecursively(int x, int y)
                 FloodFillClearTilesRecursively(x -1, y - 1);//north-west
             } else return;
         } else return;
+#endif
     }
 }
 
@@ -225,12 +311,15 @@ void UpdateGameplayScreen(void)
     }
     screenOffset = (Vector2){ screenCenter.x - (tileSize*boardWidth + boardWidth-1) / 2.0f,
                               screenCenter.y - (tileSize*boardHeight + boardHeight-1) / 2.0f };
+    boardRect = (Rectangle){ screenOffset.x, screenOffset.y,
+                             (tileSize * boardWidth) + boardWidth - 1,
+                             (tileSize * boardHeight) + boardHeight - 1 };
 
     // Mouse capture
     if (hp > 0)
     {
         bool clickL = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
-        bool clickR = IsMouseButtonReleased(MOUSE_BUTTON_RIGHT);
+        bool clickR = IsMouseButtonPressed(MOUSE_BUTTON_RIGHT);
         bool clickM = IsMouseButtonReleased(MOUSE_BUTTON_MIDDLE);
         Vector2 mousePos = GetMousePosition();
         if (clickL != clickR != clickM)
@@ -241,9 +330,8 @@ void UpdateGameplayScreen(void)
                 {
                     for (int x = 0; x < boardWidth; ++x)
                     {
-                        Rectangle boardTileInWorld = { x * tileSize + x + screenOffset.x,
-                                                       y * tileSize + y + screenOffset.y,
-                                                       tileSize, tileSize };
+
+                        Rectangle boardTileInWorld = MakeRectFromTile(x, y);
                         if (CheckCollisionPointRec(mousePos, boardTileInWorld))
                         {
                             if (clickL)
@@ -271,53 +359,44 @@ void UpdateGameplayScreen(void)
                                 // First make sure that the number of adjacent flagged/mine-having tiles
                                 //is the same as the number in the clicked tile's value.
                                 int numOfAdjacentFlags = 0;
-                                if (x < boardWidth - 1)
+                                for (int offsetY = -1; offsetY < 2; ++offsetY)
                                 {
-                                    if ((boardMask[y][x + 1] == -1) || (board[y][x + 1] == -2)) //east
+                                    for (int offsetX = -1; offsetX < 2; ++offsetX)
                                     {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                    if ((y > 0) && ((boardMask[y - 1][x + 1] == -1) || (board[y - 1][x + 1] == -2))) //north-east
-                                    {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                }
-                                if (x > 0)
-                                {
-                                    if ((boardMask[y][x - 1] == -1) || (board[y][x - 1] == -2)) //west
-                                    {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                    if ((y < boardHeight - 1) && ((boardMask[y + 1][x - 1] == -1) || (board[y + 1][x - 1] == -2))) //south-west
-                                    {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                }
-                                if (y < boardHeight - 1)
-                                {
-                                    if ((boardMask[y + 1][x] == -1) || (board[y + 1][x] == -2)) //south
-                                    {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                    if ((x < boardWidth - 1) && ((boardMask[y + 1][x + 1] == -1) || (board[y + 1][x + 1] == -2))) //south-east
-                                    {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                }
-                                if (y > 0)
-                                {
-                                    if ((boardMask[y - 1][x] == -1) || (board[y - 1][x] == -2)) //north
-                                    {
-                                        ++numOfAdjacentFlags;
-                                    }
-                                    if ((x > 0) && ((boardMask[y - 1][x - 1] == -1) || (board[y - 1][x - 1] == -2))) //north-west
-                                    {
-                                        ++numOfAdjacentFlags;
+                                        if (!((offsetX == 0) && (offsetY == 0)))
+                                        {
+                                            int neighborX = x + offsetX;
+                                            int neighborY = y + offsetY;
+                                            if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                                                (neighborY < boardHeight) && (neighborY >= 0) &&
+                                                (boardMask[neighborY][neighborX] == -1 || (board[neighborY][neighborX] == -2)))
+                                            {
+                                                ++numOfAdjacentFlags;
+                                            }
+                                        }
                                     }
                                 }
                                 // Then reveal all adjacent tiles
                                 if (numOfAdjacentFlags == board[y][x])
                                 {
+#if 1
+                                    for (int offsetY = -1; offsetY < 2; ++offsetY)
+                                    {
+                                        for (int offsetX = -1; offsetX < 2; ++offsetX)
+                                        {
+                                            if (!((offsetX == 0) && (offsetY == 0)))
+                                            {
+                                                int neighborX = x + offsetX;
+                                                int neighborY = y + offsetY;
+                                                if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                                                    (neighborY < boardHeight) && (neighborY >= 0))
+                                                {
+                                                    AttemptTileReveal(neighborX, neighborY);
+                                                }
+                                            }
+                                        }
+                                    }
+#else
                                     if (x < boardWidth - 1)
                                     {
                                         AttemptTileReveal(x + 1, y);
@@ -350,6 +429,7 @@ void UpdateGameplayScreen(void)
                                             AttemptTileReveal(x - 1, y - 1);
                                         }
                                     }
+#endif
                                 }
                             }
                         }
@@ -393,7 +473,7 @@ void UpdateGameplayScreen(void)
     // Press enter or tap to change to ENDING screen
     if (IsKeyPressed(KEY_ESCAPE))
     {
-        finishScreen = 1;
+        finishResult = (int)OPTIONS;
         PlaySound(fxCoin);
     }
 }
@@ -412,20 +492,41 @@ void DrawGameplayScreen(void)
     {
         for (int x = 0; x < boardWidth; ++x)
         {
-            Rectangle boardTile = { x * tileSize + x + screenOffset.x,
-                                    y * tileSize + y + screenOffset.y,
-                                    tileSize, tileSize };
+            Rectangle boardTile = MakeRectFromTile(x,y);
             Color tileColor = { 120,120,120,255 };
             Color touchNumColor = BLACK;
             char * tileTextSymbol[64];
+
             if (boardMask[y][x] <= 0)
             {
-                tileColor = (Color){ 185,185,185,255 };
                 touchNumColor = (Color){ 0,0,0,0 };
-                if (boardMask[y][x] == -1)
+                if (!(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(GetMousePosition(), boardTile)))
                 {
-                    sprintf(tileTextSymbol, "X\n");
-                    touchNumColor = BROWN; // Draw flag
+                    tileColor = (Color){ 185,185,185,255 };
+                    if (boardMask[y][x] == -1)
+                    {
+                        sprintf(tileTextSymbol, "X\n");
+                        touchNumColor = BROWN; // Draw flag
+                    }
+                }
+                if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
+                {
+                    for (int offsetY = -1; offsetY < 2; ++offsetY)
+                    {
+                        for (int offsetX = -1; offsetX < 2; ++offsetX)
+                        {
+                            int neighborX = x + offsetX;
+                            int neighborY = y + offsetY;
+                            Rectangle neighborTile = MakeRectFromTile(neighborX, neighborY);
+                            if ((neighborX < boardWidth) && (neighborX >= 0) &&
+                                (neighborY < boardHeight) && (neighborY >= 0) &&
+                                (boardMask[y][x] != -1) && CheckCollisionPointRec(GetMousePosition(), neighborTile))
+                            {
+                                touchNumColor = (Color){ 0,0,0,0 };
+                                tileColor = (Color){ 120,120,120,255 };
+                            }
+                        }
+                    }
                 }
             }
             else
@@ -507,11 +608,18 @@ void DrawGameplayScreen(void)
 // Gameplay Screen Unload logic
 void UnloadGameplayScreen(void)
 {
-
+    for (int y = 0; y < boardHeight; ++y)
+    {
+        for (int x = 0; x < boardWidth; ++x)
+        {
+            board[y][x] = 0;
+            boardMask[y][x] = 0;
+        }
+    }
 }
 
 // Gameplay Screen should finish?
 int FinishGameplayScreen(void)
 {
-    return finishScreen;
+    return finishResult;
 }

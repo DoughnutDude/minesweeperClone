@@ -351,11 +351,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\gameplay.h" />
     <ClInclude Include="..\..\..\src\screens.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\minesweeper_game.c" />
+    <ClCompile Include="..\..\..\src\screens.c" />
     <ClCompile Include="..\..\..\src\screen_logo.c" />
     <ClCompile Include="..\..\..\src\screen_title.c" />
     <ClCompile Include="..\..\..\src\screen_options.c" />

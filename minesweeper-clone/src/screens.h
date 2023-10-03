@@ -23,13 +23,33 @@
 *
 **********************************************************************************************/
 
+/**********************************************************************************************
+*   Modified from the original software for use in Minesweeper Clone
+*   Copyright (c) 2023 (DoughnutDude)
+**********************************************************************************************/
+
 #ifndef SCREENS_H
 #define SCREENS_H
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE, OPTIONS, GAMEPLAY, ENDING } GameScreen;
+#define local_persist static
+#define global_var	  static
+#define internal      static
+
+typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE = 1, OPTIONS = 2, GAMEPLAY = 3, ENDING = 4} GameScreen;
+typedef struct {
+	Rectangle rect;
+	Color rectColor;
+	Color textColor;
+	char * text;
+} Button;
+
+//----------------------------------------------------------------------------------
+// Macros
+//----------------------------------------------------------------------------------
+#define ARRAYCOUNT(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 //----------------------------------------------------------------------------------
 // Global Variables Declaration (shared by several modules)
@@ -42,6 +62,8 @@ extern Sound fxCoin;
 #ifdef __cplusplus
 extern "C" {            // Prevents name mangling of functions
 #endif
+
+void DrawButton(Button button, int textOffsetX, int textOffsetY);
 
 //----------------------------------------------------------------------------------
 // Logo Screen Functions Declaration

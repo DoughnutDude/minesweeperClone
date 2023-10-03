@@ -23,14 +23,21 @@
 *
 **********************************************************************************************/
 
+/**********************************************************************************************
+*   Modified from the original software for use in Minesweeper Clone
+*   Copyright (c) 2023 (DoughnutDude)
+**********************************************************************************************/
+
 #include "raylib.h"
 #include "screens.h"
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
-static int framesCounter = 0;
-static int finishScreen = 0;
+global_var int framesCounter = 0;
+global_var int finishResult = 0;
+
+Button newGameButton = { 0 };
 
 //----------------------------------------------------------------------------------
 // Title Screen Functions Definition
@@ -41,7 +48,12 @@ void InitTitleScreen(void)
 {
     // TODO: Initialize TITLE screen variables here!
     framesCounter = 0;
-    finishScreen = 0;
+    finishResult = 0;
+
+    newGameButton.rect = (Rectangle){ GetScreenWidth() / 3, GetScreenHeight() / 3, 400, 60 };
+    newGameButton.rectColor = BROWN;
+    newGameButton.textColor = BEIGE;
+    newGameButton.text = "New Game";
 }
 
 // Title Screen Update logic
@@ -50,14 +62,21 @@ void UpdateTitleScreen(void)
     // TODO: Update TITLE screen variables here!
 
     // Press enter or tap to change to GAMEPLAY screen
-    if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+    bool clickL = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
+    Vector2 mousePos = GetMousePosition();
+    if (clickL)
     {
-        finishScreen = 2;   // GAMEPLAY
-        PlaySound(fxCoin);
+        if (CheckCollisionPointRec(mousePos, newGameButton.rect))
+        {
+            finishResult = (int)GAMEPLAY;
+            PlaySound(fxCoin);
+        }
     }
+
     if (IsKeyPressed(KEY_ESCAPE))
     {
-        finishScreen = 1;   // OPTIONS
+        finishResult = (int)OPTIONS;
+        PlaySound(fxCoin);
     }
 }
 
@@ -65,11 +84,10 @@ void UpdateTitleScreen(void)
 void DrawTitleScreen(void)
 {
     // TODO: Draw TITLE screen here!
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GREEN);
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY);
     Vector2 pos = { 20, 10 };
-    DrawTextEx(font, "TITLE SCREEN", pos, font.baseSize, 4, DARKGREEN);
-    pos = (Vector2) { 120, 220 };
-    DrawTextEx(font, "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", pos, 20, 2, DARKGREEN);
+    DrawTextEx(font, "Minesweeper Clone", pos, font.baseSize, 4, BEIGE);
+    DrawButton(newGameButton, 10, 10);
 }
 
 // Title Screen Unload logic
@@ -81,5 +99,5 @@ void UnloadTitleScreen(void)
 // Title Screen should finish?
 int FinishTitleScreen(void)
 {
-    return finishScreen;
+    return finishResult;
 }

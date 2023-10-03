@@ -23,14 +23,23 @@
 *
 **********************************************************************************************/
 
+/**********************************************************************************************
+*   Modified from the original software for use in Minesweeper Clone
+*   Copyright (c) 2023 (DoughnutDude)
+**********************************************************************************************/
+
 #include "raylib.h"
 #include "screens.h"
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
-static int framesCounter = 0;
-static int finishScreen = 0;
+global_var int framesCounter = 0;
+global_var int finishResult = -1;
+
+GameScreen previousScreen;
+
+Button mainMenuButton = {0};
 
 //----------------------------------------------------------------------------------
 // Options Screen Functions Definition
@@ -39,17 +48,33 @@ static int finishScreen = 0;
 // Options Screen Initialization logic
 void InitOptionsScreen(void)
 {
-    // TODO: Initialize OPTIONS screen variables here!
     framesCounter = 0;
-    finishScreen = 0;
+    finishResult = 0;
+
+    previousScreen = currentScreen;
+    
+    mainMenuButton.rect = (Rectangle){ GetScreenWidth() / 3, GetScreenHeight() / 3, 400, 60 };
+    mainMenuButton.rectColor = BROWN;
+    mainMenuButton.textColor = BEIGE;
+    mainMenuButton.text = "Exit to Main Menu";
 }
 
 // Options Screen Update logic
 void UpdateOptionsScreen(void)
 {
+    bool clickL = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
+    Vector2 mousePos = GetMousePosition();
+    if (clickL)
+    {
+        if (CheckCollisionPointRec(mousePos, mainMenuButton.rect))
+        {
+            finishResult = (int)TITLE;
+        }
+    }
+
     if (IsKeyPressed(KEY_ESCAPE))
     {
-        finishScreen = 1;
+        finishResult = (int)previousScreen;
         PlaySound(fxCoin);
     }
 }
@@ -60,16 +85,16 @@ void DrawOptionsScreen(void)
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY); //draw backdrop
     Vector2 pos = { 20, 10 };
     DrawTextEx(font, "OPTIONS WILL GO HERE:", pos, font.baseSize, 4, LIGHTGRAY);
+    DrawButton(mainMenuButton, 10, 10);
 }
 
 // Options Screen Unload logic
 void UnloadOptionsScreen(void)
 {
-    // TODO: Unload OPTIONS screen variables here!
 }
 
 // Options Screen should finish?
 int FinishOptionsScreen(void)
 {
-    return finishScreen;
+    return finishResult;
 }

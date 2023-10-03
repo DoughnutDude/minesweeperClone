@@ -23,28 +23,33 @@
 *
 **********************************************************************************************/
 
+/**********************************************************************************************
+*   Modified from the original software for use in Minesweeper Clone
+*   Copyright (c) 2023 (DoughnutDude)
+**********************************************************************************************/
+
 #include "raylib.h"
 #include "screens.h"
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
-static int framesCounter = 0;
-static int finishScreen = 0;
+global_var int framesCounter = 0;
+global_var int finishResult = 0;
 
-static int logoPositionX = 0;
-static int logoPositionY = 0;
+global_var int logoPositionX = 0;
+global_var int logoPositionY = 0;
 
-static int lettersCount = 0;
+global_var int lettersCount = 0;
 
-static int topSideRecWidth = 0;
-static int leftSideRecHeight = 0;
+global_var int topSideRecWidth = 0;
+global_var int leftSideRecHeight = 0;
 
-static int bottomSideRecWidth = 0;
-static int rightSideRecHeight = 0;
+global_var int bottomSideRecWidth = 0;
+global_var int rightSideRecHeight = 0;
 
-static int state = 0;              // Logo animation states
-static float alpha = 1.0f;         // Useful for fading
+global_var int state = 0;              // Logo animation states
+global_var float alpha = 1.0f;         // Useful for fading
 
 //----------------------------------------------------------------------------------
 // Logo Screen Functions Definition
@@ -53,7 +58,7 @@ static float alpha = 1.0f;         // Useful for fading
 // Logo Screen Initialization logic
 void InitLogoScreen(void)
 {
-    finishScreen = 0;
+    finishResult = 0;
     framesCounter = 0;
     lettersCount = 0;
 
@@ -117,13 +122,13 @@ void UpdateLogoScreen(void)
                 if (alpha <= 0.0f)
                 {
                     alpha = 0.0f;
-                    finishScreen = 1;   // Jump to next screen
+                    finishResult = (int)TITLE;   // Jump to title screen
                 }
             }
         }
     }
     if (GetCharPressed()) {
-        finishScreen = 1;
+        finishResult = (int)TITLE;
     }
 }
 
@@ -172,5 +177,5 @@ void UnloadLogoScreen(void)
 // Logo Screen should finish?
 int FinishLogoScreen(void)
 {
-    return finishScreen;
+    return finishResult;
 }

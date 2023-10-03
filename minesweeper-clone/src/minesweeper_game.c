@@ -13,6 +13,11 @@
 *
 ********************************************************************************************/
 
+/**********************************************************************************************
+*   Modified from the original software for use in Minesweeper Clone
+*   Copyright (c) 2023 (DoughnutDude)
+**********************************************************************************************/
+
 #include "raylib.h"
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
 
@@ -35,24 +40,24 @@ Sound fxCoin = { 0 };
 //----------------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
 //----------------------------------------------------------------------------------
-static const int screenWidth = 1280;
-static const int screenHeight = 720;
+global_var const int screenWidth = 1280;
+global_var const int screenHeight = 720;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
-static float transAlpha = 0.0f;
-static bool onTransition = false;
-static bool transFadeOut = false;
-static int transFromScreen = -1;
-static GameScreen transToScreen = UNKNOWN;
+global_var float transAlpha = 0.0f;
+global_var bool onTransition = false;
+global_var bool transFadeOut = false;
+global_var int transFromScreen = -1;
+global_var GameScreen transToScreen = UNKNOWN;
 
 //----------------------------------------------------------------------------------
 // Local Functions Declaration
 //----------------------------------------------------------------------------------
-static void ChangeToScreen(int screen);     // Change to screen, no transition effect
+internal void ChangeToScreen(int screen);     // Change to screen, no transition effect
 
-static void UpdateDrawFrame(void);          // Update and draw one frame
+internal void UpdateDrawFrame(void);          // Update and draw one frame
 
-static void CustomLog(int msgType, const char* text, va_list args);
+internal void CustomLog(int msgType, const char* text, va_list args);
 
 //----------------------------------------------------------------------------------
 // Main entry point
@@ -71,7 +76,7 @@ int main(void)
     // Load global data (assets that must be available in all screens, i.e. font)
     ChangeDirectory("../../../src");
     font = LoadFont("resources/Inconsolata-ExtraBold.ttf");
-    music = LoadMusicStream("resources/ambient.ogg");
+    //music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
     ChangeDirectory("../projects/VS2022/raylib_game");
 
@@ -124,14 +129,14 @@ int main(void)
 // Module specific Functions Definition
 //----------------------------------------------------------------------------------
 // Change to next screen, no transition
-static void ChangeToScreen(GameScreen screen)
+internal void ChangeToScreen(GameScreen screen)
 {
     // Unload current screen
     switch (currentScreen)
     {
         case LOGO: UnloadLogoScreen(); break;
         case TITLE: UnloadTitleScreen(); break;
-        case OPTIONS: InitOptionsScreen(); break;
+        case OPTIONS: UnloadOptionsScreen(); break;
         case GAMEPLAY: UnloadGameplayScreen(); break;
         case ENDING: UnloadEndingScreen(); break;
         default: break;
@@ -152,52 +157,64 @@ static void ChangeToScreen(GameScreen screen)
 }
 
 // Update and draw game frame
-static void UpdateDrawFrame(void)
+internal void UpdateDrawFrame(void)
 {
     // Update
     //----------------------------------------------------------------------------------
     UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
-
+    int finishResult = 0;
     switch(currentScreen)
     {
         case LOGO:
         {
             UpdateLogoScreen();
-
-            if (FinishLogoScreen()) ChangeToScreen(TITLE);
+            finishResult = FinishLogoScreen();
 
         } break;
         case TITLE:
         {
             UpdateTitleScreen();
-
-            if (FinishTitleScreen() == 1) ChangeToScreen(OPTIONS);
-            else if (FinishTitleScreen() == 2) ChangeToScreen(GAMEPLAY);
+            finishResult = FinishTitleScreen();
 
         } break;
         case OPTIONS:
         {
             UpdateOptionsScreen();
-
-            if (FinishOptionsScreen()) ChangeToScreen(GAMEPLAY);
+            finishResult = FinishOptionsScreen();
 
         } break;
         case GAMEPLAY:
         {
             UpdateGameplayScreen();
-
-            if (FinishGameplayScreen() == 1) ChangeToScreen(OPTIONS);
-            else if (FinishGameplayScreen() == 2) ChangeToScreen(ENDING);
+            finishResult = FinishGameplayScreen();
 
         } break;
         case ENDING:
         {
             UpdateEndingScreen();
-
-            if (FinishEndingScreen() == 1) ChangeToScreen(TITLE);
+            finishResult = FinishEndingScreen();
 
         } break;
         default: break;
+    }
+    if (finishResult > 0)
+    {
+        ChangeToScreen((GameScreen)finishResult);
+    }
+
+    if ((IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) && (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER)))
+    {
+        if (IsWindowFullscreen())
+        {
+            ToggleFullscreen();
+            SetWindowSize(screenWidth, screenHeight);
+        }
+        else
+        {
+            int monitor = GetCurrentMonitor();
+            SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
+            ToggleFullscreen();
+        }
     }
     //----------------------------------------------------------------------------------
 
@@ -226,7 +243,7 @@ static void UpdateDrawFrame(void)
 }
 
 // Logger
-static void CustomLog(int msgType, const char* text, va_list args)
+internal void CustomLog(int msgType, const char* text, va_list args)
 {
     char timeStr[64] = { 0 };
     time_t now = time(NULL);
