@@ -229,6 +229,8 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;PLATFORM_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>Default</CompileAs>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\src;$(SolutionDir)..\..\src\external;$(SolutionDir)..\..\..\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <AdditionalOptions>/TP %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -355,7 +357,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\minesweeper_game.c" />
-    <ClCompile Include="..\..\..\src\screens.c" />
+    <ClCompile Include="..\..\..\src\screens.cpp" />
     <ClCompile Include="..\..\..\src\screen_logo.c" />
     <ClCompile Include="..\..\..\src\screen_title.c" />
     <ClCompile Include="..\..\..\src\screen_options.c" />

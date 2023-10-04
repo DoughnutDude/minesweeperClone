@@ -39,7 +39,7 @@
 #define internal      static
 
 typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE = 1, OPTIONS = 2, GAMEPLAY = 3, ENDING = 4} GameScreen;
-typedef struct {
+typedef struct Button {
 	Rectangle rect;
 	Color rectColor;
 	Color textColor;
@@ -58,6 +58,7 @@ extern GameScreen currentScreen;
 extern Font font;
 extern Music music;
 extern Sound fxCoin;
+extern bool running;
 
 #ifdef __cplusplus
 extern "C" {            // Prevents name mangling of functions

@@ -70,7 +70,7 @@ void DrawEndingScreen(void)
 
     Vector2 pos = { 20, 10 };
     DrawTextEx(font, "ENDING SCREEN", pos, font.baseSize, 4, DARKBLUE);
-    pos = (Vector2){ 120, 220 };
+    pos = { 120, 220 };
     DrawTextEx(font, "PRESS ENTER or TAP to RETURN to TITLE SCREEN", pos, 20, 2, DARKBLUE);
 }
 

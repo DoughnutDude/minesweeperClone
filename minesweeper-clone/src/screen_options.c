@@ -53,7 +53,7 @@ void InitOptionsScreen(void)
 
     previousScreen = currentScreen;
     
-    mainMenuButton.rect = (Rectangle){ GetScreenWidth() / 3, GetScreenHeight() / 3, 400, 60 };
+    mainMenuButton.rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f, 400, 60 };
     mainMenuButton.rectColor = BROWN;
     mainMenuButton.textColor = BEIGE;
     mainMenuButton.text = "Exit to Main Menu";

@@ -36,6 +36,7 @@ GameScreen currentScreen = LOGO;
 Font font = { 0 };
 Music music = { 0 };
 Sound fxCoin = { 0 };
+bool running;
 
 //----------------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
@@ -76,7 +77,7 @@ int main(void)
     // Load global data (assets that must be available in all screens, i.e. font)
     ChangeDirectory("../../../src");
     font = LoadFont("resources/Inconsolata-ExtraBold.ttf");
-    //music = LoadMusicStream("resources/ambient.ogg");
+    music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
     ChangeDirectory("../projects/VS2022/raylib_game");
 
@@ -94,7 +95,8 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    running = true;
+    while (!WindowShouldClose() && running)    // Detect window close button or ESC key
     {
         UpdateDrawFrame();
     }

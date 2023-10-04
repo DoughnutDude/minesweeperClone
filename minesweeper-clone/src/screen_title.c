@@ -38,6 +38,7 @@ global_var int framesCounter = 0;
 global_var int finishResult = 0;
 
 Button newGameButton = { 0 };
+Button quitButton = { 0 };
 
 //----------------------------------------------------------------------------------
 // Title Screen Functions Definition
@@ -50,10 +51,15 @@ void InitTitleScreen(void)
     framesCounter = 0;
     finishResult = 0;
 
-    newGameButton.rect = (Rectangle){ GetScreenWidth() / 3, GetScreenHeight() / 3, 400, 60 };
+    newGameButton.rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f, 400, 60 };
     newGameButton.rectColor = BROWN;
     newGameButton.textColor = BEIGE;
     newGameButton.text = "New Game";
+
+    quitButton.rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f + 80, 400, 60 };
+    quitButton.rectColor = BROWN;
+    quitButton.textColor = BEIGE;
+    quitButton.text = "Quit";
 }
 
 // Title Screen Update logic
@@ -69,6 +75,12 @@ void UpdateTitleScreen(void)
         if (CheckCollisionPointRec(mousePos, newGameButton.rect))
         {
             finishResult = (int)GAMEPLAY;
+            PlaySound(fxCoin);
+        }
+        if (CheckCollisionPointRec(mousePos, quitButton.rect))
+        {
+            finishResult = (int)TITLE;
+            running = false;
             PlaySound(fxCoin);
         }
     }
@@ -88,6 +100,7 @@ void DrawTitleScreen(void)
     Vector2 pos = { 20, 10 };
     DrawTextEx(font, "Minesweeper Clone", pos, font.baseSize, 4, BEIGE);
     DrawButton(newGameButton, 10, 10);
+    DrawButton(quitButton, 10, 10);
 }
 
 // Title Screen Unload logic
