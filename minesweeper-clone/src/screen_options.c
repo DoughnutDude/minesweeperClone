@@ -35,11 +35,19 @@
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
 global_var int framesCounter = 0;
-global_var int finishResult = -1;
+global_var int finishResult = 0;
 
 GameScreen previousScreen;
 
-Button mainMenuButton = {0};
+#define buttonCount 3
+union {
+    struct {
+        Button resumeButton;
+        Button mainMenuButton;
+        Button quitButton;
+    };
+    Button buttons[buttonCount];
+} menu;
 
 //----------------------------------------------------------------------------------
 // Options Screen Functions Definition
@@ -52,11 +60,17 @@ void InitOptionsScreen(void)
     finishResult = 0;
 
     previousScreen = currentScreen;
-    
-    mainMenuButton.rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f, 400, 60 };
-    mainMenuButton.rectColor = BROWN;
-    mainMenuButton.textColor = BEIGE;
-    mainMenuButton.text = "Exit to Main Menu";
+
+
+    for (int i = 0; i < ARRAYCOUNT(menu.buttons); ++i)
+    {
+        menu.buttons[i].rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f + i*80, 400, 60 };
+        menu.buttons[i].rectColor = BROWN;
+        menu.buttons[i].textColor = BEIGE;
+    }
+    menu.resumeButton.text = (previousScreen == GAMEPLAY) ? "Resume": "Go Back";
+    menu.mainMenuButton.text = "Exit to Title Screen";
+    menu.quitButton.text = "Quit";
 }
 
 // Options Screen Update logic
@@ -66,9 +80,19 @@ void UpdateOptionsScreen(void)
     Vector2 mousePos = GetMousePosition();
     if (clickL)
     {
-        if (CheckCollisionPointRec(mousePos, mainMenuButton.rect))
+        if (CheckCollisionPointRec(mousePos, menu.mainMenuButton.rect))
         {
             finishResult = (int)TITLE;
+        }
+        else if (CheckCollisionPointRec(mousePos, menu.resumeButton.rect))
+        {
+            finishResult = (int)previousScreen;
+            PlaySound(fxCoin);
+        } else if (CheckCollisionPointRec(mousePos, menu.quitButton.rect))
+        {
+            finishResult = -1;
+            PlaySound(fxCoin);
+            running = false;
         }
     }
 
@@ -85,7 +109,10 @@ void DrawOptionsScreen(void)
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY); //draw backdrop
     Vector2 pos = { 20, 10 };
     DrawTextEx(font, "OPTIONS WILL GO HERE:", pos, font.baseSize, 4, LIGHTGRAY);
-    DrawButton(mainMenuButton, 10, 10);
+    for (int i = 0; i < buttonCount; ++i)
+    {
+        DrawButton(menu.buttons[i], 10, 10);
+    }
 }
 
 // Options Screen Unload logic

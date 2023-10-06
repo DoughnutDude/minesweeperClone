@@ -77,7 +77,7 @@ int main(void)
     // Load global data (assets that must be available in all screens, i.e. font)
     ChangeDirectory("../../../src");
     font = LoadFont("resources/Inconsolata-ExtraBold.ttf");
-    music = LoadMusicStream("resources/ambient.ogg");
+    //music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
     ChangeDirectory("../projects/VS2022/raylib_game");
 
@@ -208,12 +208,14 @@ internal void UpdateDrawFrame(void)
     {
         if (IsWindowFullscreen())
         {
+            ClearWindowState(FLAG_WINDOW_UNDECORATED);
             ToggleFullscreen();
             SetWindowSize(screenWidth, screenHeight);
         }
         else
         {
             int monitor = GetCurrentMonitor();
+            SetWindowState(FLAG_WINDOW_UNDECORATED);
             SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
             ToggleFullscreen();
         }

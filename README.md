@@ -1,6 +1,6 @@
 ## Minesweeper Clone
 
-![(Minesweeper Clone)](./minesweeper-clone/screenshots/screenshot001.png "Minesweeper Clone")
+![(Minesweeper Clone)](./minesweeper-clone/screenshots/screenshot002.png "Minesweeper Clone")
 
 ### Description
 
@@ -8,15 +8,15 @@ Just a minesweeper clone in raylib made for educational purposes. May expand wit
 
 ### Features + WIP Roadmap
 
- - Basic Minesweeper gameplay [WIP]
+ - Basic Minesweeper gameplay
    - flagging
    - floodfill clearing
    - chording
- - Parameterized board generation [WIP]
-   - variable board size [WIP]
+ - Parameterized procedural board generation [WIP]
+   - variable board size
    - variable mine density [WIP]
    - no-guess gamemode [WIP]
- - Speed-scrolling style multiplayer (similar to Tetris99) [WIP]
+ - Speed-focused style multiplayer (inspired by Tetris99) [WIP]
    - TBD
 
 ### Controls
@@ -25,6 +25,9 @@ Mouse:
  - Left Click: Reveal tile
  - Right Click: Flag tile
  - Middle Click: Chord
+
+Keyboard:
+ - WASD: Camera/screen movement
 
 ### Screenshots
 

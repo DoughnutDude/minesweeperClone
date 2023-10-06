@@ -37,9 +37,6 @@
 global_var int framesCounter = 0;
 global_var int finishResult = 0;
 
-Button newGameButton = { 0 };
-Button quitButton = { 0 };
-
 //----------------------------------------------------------------------------------
 // Title Screen Functions Definition
 //----------------------------------------------------------------------------------
@@ -50,16 +47,6 @@ void InitTitleScreen(void)
     // TODO: Initialize TITLE screen variables here!
     framesCounter = 0;
     finishResult = 0;
-
-    newGameButton.rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f, 400, 60 };
-    newGameButton.rectColor = BROWN;
-    newGameButton.textColor = BEIGE;
-    newGameButton.text = "New Game";
-
-    quitButton.rect = { GetScreenWidth() / 3.0f, GetScreenHeight() / 3.0f + 80, 400, 60 };
-    quitButton.rectColor = BROWN;
-    quitButton.textColor = BEIGE;
-    quitButton.text = "Quit";
 }
 
 // Title Screen Update logic
@@ -69,20 +56,12 @@ void UpdateTitleScreen(void)
 
     // Press enter or tap to change to GAMEPLAY screen
     bool clickL = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
+    bool tap = IsGestureDetected(GESTURE_TAP);
     Vector2 mousePos = GetMousePosition();
-    if (clickL)
+    if (clickL != tap != IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        if (CheckCollisionPointRec(mousePos, newGameButton.rect))
-        {
-            finishResult = (int)GAMEPLAY;
-            PlaySound(fxCoin);
-        }
-        if (CheckCollisionPointRec(mousePos, quitButton.rect))
-        {
-            finishResult = (int)TITLE;
-            running = false;
-            PlaySound(fxCoin);
-        }
+        finishResult = (int)GAMEPLAY;
+        PlaySound(fxCoin);
     }
 
     if (IsKeyPressed(KEY_ESCAPE))
@@ -99,8 +78,12 @@ void DrawTitleScreen(void)
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY);
     Vector2 pos = { 20, 10 };
     DrawTextEx(font, "Minesweeper Clone", pos, font.baseSize, 4, BEIGE);
-    DrawButton(newGameButton, 10, 10);
-    DrawButton(quitButton, 10, 10);
+
+    float textWidth = MeasureText("CLICK / TAP", font.baseSize);
+    pos = { GetScreenWidth() / 2.0f - textWidth / 2.0f, GetScreenHeight() / 3.0f };
+    Rectangle startScreenRect = { pos.x - 10, pos.y - 10, textWidth + 20, 50 };
+    DrawRectangleRounded(startScreenRect, 0.5f, 2, BROWN);
+    DrawTextEx(font, "CLICK / TAP", pos, font.baseSize, 4, BEIGE);
 }
 
 // Title Screen Unload logic

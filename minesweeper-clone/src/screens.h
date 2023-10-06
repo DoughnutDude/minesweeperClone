@@ -44,12 +44,14 @@ typedef struct Button {
 	Color rectColor;
 	Color textColor;
 	char * text;
-} Button;
+};
 
 //----------------------------------------------------------------------------------
 // Macros
 //----------------------------------------------------------------------------------
 #define ARRAYCOUNT(arr) (sizeof(arr) / sizeof((arr)[0]))
+//#define assert(expression) if(!(expression)) {*(int *) 0 = 0;}
+#define ASSERT(expression)
 
 //----------------------------------------------------------------------------------
 // Global Variables Declaration (shared by several modules)
@@ -64,7 +66,10 @@ extern bool running;
 extern "C" {            // Prevents name mangling of functions
 #endif
 
-void DrawButton(Button button, int textOffsetX, int textOffsetY);
+//----------------------------------------------------------------------------------
+// Drawing Functions Declaration
+//----------------------------------------------------------------------------------
+ void DrawButton(Button button, int textOffsetX, int textOffsetY);
 
 //----------------------------------------------------------------------------------
 // Logo Screen Functions Declaration
@@ -114,5 +119,50 @@ int FinishEndingScreen(void);
 #ifdef __cplusplus
 }
 #endif
+
+//----------------------------------------------------------------------------------
+// Vector Operations
+//----------------------------------------------------------------------------------
+inline Vector2 operator+(Vector2 a, Vector2 b)
+{
+    Vector2 result = {};
+    result.x = a.x + b.x;
+    result.y = a.y + b.y;
+    return result;
+}
+inline Vector2 &operator+=(Vector2 &a, Vector2 b)
+{
+    a = a + b;
+    return a;
+}
+inline Vector2 operator-(Vector2 a, Vector2 b)
+{
+    Vector2 result = {};
+    result.x = a.x - b.x;
+    result.y = a.y - b.y;
+    return result;
+}
+inline Vector2 &operator-=(Vector2 &a, Vector2 b)
+{
+    a = a - b;
+    return a;
+}
+inline Vector2 operator*(float a, Vector2 b)
+{
+    Vector2 result = {};
+    result.x = a * b.x;
+    result.y = a * b.y;
+    return result;
+}
+inline Vector2 operator*(Vector2 a, float b)
+{
+    Vector2 result = b * a;
+    return result;
+}
+inline Vector2 &operator*=(Vector2 &a, float b)
+{
+    a = a * b;
+    return a;
+}
 
 #endif // SCREENS_H
