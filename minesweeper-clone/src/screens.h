@@ -31,6 +31,10 @@
 #ifndef SCREENS_H
 #define SCREENS_H
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
@@ -38,12 +42,19 @@
 #define global_var	  static
 #define internal      static
 
+#define maxBoardHeight 99
+#define maxBoardWidth 99
+
 typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE = 1, OPTIONS = 2, GAMEPLAY = 3, ENDING = 4} GameScreen;
 typedef struct Button {
 	Rectangle rect;
 	Color rectColor;
 	Color textColor;
 	char * text;
+};
+struct TextBox {
+    Button button;
+    char value[256];
 };
 
 //----------------------------------------------------------------------------------
@@ -60,16 +71,33 @@ extern GameScreen currentScreen;
 extern Font font;
 extern Music music;
 extern Sound fxCoin;
+
 extern bool running;
+extern int boardHeight;
+extern int boardWidth;
+extern int mineDensity;
+extern int minesDesired;
+extern bool mineGenMode; // 0 = by density, 1 = til maxMineCount
 
 #ifdef __cplusplus
 extern "C" {            // Prevents name mangling of functions
 #endif
 
+inline int powInt(int a, int b)
+{
+    int result = 1;
+    for (int i = 0; i < b; ++i)
+    {
+        result *= a;
+    }
+    return result;
+}
+
 //----------------------------------------------------------------------------------
 // Drawing Functions Declaration
 //----------------------------------------------------------------------------------
  void DrawButton(Button button, int textOffsetX, int textOffsetY);
+ void DrawTextBox(TextBox textBox, int textOffsetX, int textOffsetY);
 
 //----------------------------------------------------------------------------------
 // Logo Screen Functions Declaration
@@ -120,9 +148,25 @@ int FinishEndingScreen(void);
 }
 #endif
 
+inline Color operator-(Color a, Color b)
+{
+    Color result = {};
+    result.r = a.r - b.r;
+    result.g = a.g - b.g;
+    result.b = a.b - b.b;
+    return result;
+}
+
+inline Color &operator-=(Color &a, Color b)
+{
+    a = a - b;
+    return a;
+}
+
 //----------------------------------------------------------------------------------
 // Vector Operations
 //----------------------------------------------------------------------------------
+
 inline Vector2 operator+(Vector2 a, Vector2 b)
 {
     Vector2 result = {};

@@ -4,7 +4,7 @@
 
 ### Description
 
-Just a minesweeper clone in raylib made for educational purposes. May expand with additional fatures as seen in the "Work In Progress" roadmap below.
+Just a minesweeper clone in raylib made primarily for educational purposes. May expand with additional fatures as seen in the "Work In Progress" roadmap below.
 
 ### Features + WIP Roadmap
 
@@ -12,11 +12,15 @@ Just a minesweeper clone in raylib made for educational purposes. May expand wit
    - flagging
    - floodfill clearing
    - chording
+   - timer
  - Parameterized procedural board generation [WIP]
    - variable board size
-   - variable mine density [WIP]
+   - variable mine density/mine count
    - no-guess gamemode [WIP]
- - Speed-focused style multiplayer (inspired by Tetris99) [WIP]
+ - Speed-focused style multiplayer (inspired by Tetris/Tetris99) [WIP]
+   - health points?
+   - mid-match continuous board generation? [WIP]
+   - scoring system? [WIP]
    - TBD
 
 ### Controls
@@ -28,10 +32,13 @@ Mouse:
 
 Keyboard:
  - WASD: Camera/screen movement
+ - ESC: Options menu
 
 ### Screenshots
 
 _TODO: Show your game to the world, animated GIFs recommended!._
+![(Options Screen)](./minesweeper-clone/screenshots/screenshot003.png "Options Screen")
+
 
 ### Developers
 

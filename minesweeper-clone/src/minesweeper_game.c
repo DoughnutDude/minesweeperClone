@@ -21,9 +21,6 @@
 #include "raylib.h"
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
 
-#include "stdio.h"
-#include "time.h"
-
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
 #endif
@@ -75,11 +72,13 @@ int main(void)
     InitAudioDevice();      // Initialize audio device
 
     // Load global data (assets that must be available in all screens, i.e. font)
-    ChangeDirectory("../../../src");
-    font = LoadFont("resources/Inconsolata-ExtraBold.ttf");
+    ChangeDirectory(GetApplicationDirectory());
+    ChangeDirectory("../../../../../../../src");
+    font = LoadFont("resources/Inconsolata-ExtraBold.ttf");//Inconsolata-VariableFont_wdth,wght.ttf");
     //music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
-    ChangeDirectory("../projects/VS2022/raylib_game");
+    //printf("%s\n%s\n", GetApplicationDirectory(), GetWorkingDirectory());
+    ChangeDirectory(GetApplicationDirectory());
 
     SetMusicVolume(music, 1.0f);
     PlayMusicStream(music);

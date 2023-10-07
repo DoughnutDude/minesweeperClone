@@ -77,13 +77,14 @@ void DrawTitleScreen(void)
     // TODO: Draw TITLE screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY);
     Vector2 pos = { 20, 10 };
-    DrawTextEx(font, "Minesweeper Clone", pos, font.baseSize, 4, BEIGE);
+    DrawTextEx(font, "Minesweeper Clone", pos, font.baseSize, font.glyphPadding, BEIGE);
 
     float textWidth = MeasureText("CLICK / TAP", font.baseSize);
+    Vector2 test = MeasureTextEx(font, "CLICK / TAP", font.baseSize, font.glyphPadding);
     pos = { GetScreenWidth() / 2.0f - textWidth / 2.0f, GetScreenHeight() / 3.0f };
     Rectangle startScreenRect = { pos.x - 10, pos.y - 10, textWidth + 20, 50 };
     DrawRectangleRounded(startScreenRect, 0.5f, 2, BROWN);
-    DrawTextEx(font, "CLICK / TAP", pos, font.baseSize, 4, BEIGE);
+    DrawTextEx(font, "CLICK / TAP", pos, font.baseSize, font.glyphPadding, BEIGE);
 }
 
 // Title Screen Unload logic

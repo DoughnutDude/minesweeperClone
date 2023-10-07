@@ -69,9 +69,9 @@ void DrawEndingScreen(void)
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLUE);
 
     Vector2 pos = { 20, 10 };
-    DrawTextEx(font, "ENDING SCREEN", pos, font.baseSize, 4, DARKBLUE);
+    DrawTextEx(font, "ENDING SCREEN", pos, font.baseSize, font.glyphPadding, DARKBLUE);
     pos = { 120, 220 };
-    DrawTextEx(font, "PRESS ENTER or TAP to RETURN to TITLE SCREEN", pos, 20, 2, DARKBLUE);
+    DrawTextEx(font, "PRESS ENTER or TAP to RETURN to TITLE SCREEN", pos, 20, font.glyphPadding, DARKBLUE);
 }
 
 // Ending Screen Unload logic

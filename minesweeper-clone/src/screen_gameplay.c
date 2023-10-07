@@ -31,9 +31,7 @@
 
 #include "raylib.h"
 #include "screens.h"
-#include "raymath.h"
-
-#include <stdio.h>
+//#include "raymath.h"
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
@@ -53,10 +51,8 @@ Rectangle player = { 0 };
 
 int mineCount = 0;
 int maxMines = 0;
-#define boardHeight 20 // in number of tiles
-#define boardWidth 30
-int board[boardHeight][boardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
-int boardMask[boardHeight][boardWidth] = { 0 }; // 0 = revealed, 1 = hidden, 2 = flagged
+int board[maxBoardHeight][maxBoardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
+int boardMask[maxBoardHeight][maxBoardWidth] = { 0 }; // 0 = revealed, 1 = hidden, 2 = flagged
 Rectangle boardRect = { 0 };
 float tileSize = 40.0f;
 Vector2 boardCenter = { 0 };
@@ -135,7 +131,7 @@ void GenerateMinesRecursively(int x, int y)
     }
 }
 
-void FloodFillClearTilesRecursively(int x, int y)
+void FloodFillClearTilesRecursively(int x, int y) //TODO: non-recursive solution. Currently fails for boards that are large + sparse.
 {
     if (((x < boardWidth) && (x >= 0) && (y < boardHeight) && (y >= 0)) && (board[y][x] >= 0) && (boardMask[y][x] == 1))
     {
@@ -233,7 +229,7 @@ void InitGameplayScreen(void)
     dt = GetFrameTime();
 
     winCon = false;
-    hp = 3;
+    hp = 100;
     actionCount = 0;
 
     screenCenter.x = (float)GetScreenWidth() / 2.0f;
@@ -253,7 +249,18 @@ void InitGameplayScreen(void)
 
     // init board
     mineCount = 0;
-    maxMines = 0.21f * (boardWidth * boardHeight); // TODO: replace constant val with mine density var
+    if (!mineGenMode)
+    {
+        maxMines = (float)mineDensity/100.0f * (boardWidth * boardHeight);
+    }
+    else
+    {
+        maxMines = minesDesired; 
+    }
+    if (maxMines >= boardWidth * boardHeight)
+    {
+        maxMines = boardWidth * boardHeight - 1;
+    }
 
     for (int y = 0; y < boardHeight; ++y)
     {
@@ -384,8 +391,10 @@ void UpdateGameplayScreen(void)
                                     board[neighborY][neighborX] < 0)
                                 {
                                     bool mineMovedSuccessfully = false;
-                                    while (!mineMovedSuccessfully)
+                                    int iter = 0;
+                                    while (!mineMovedSuccessfully && (iter < 300))
                                     {
+                                        ++iter;
                                         int newX = GetRandomValue(0, boardWidth-1);
                                         int newY = GetRandomValue(0, boardHeight-1);
                                         // Make sure new random tile is not in neighborhood
@@ -407,7 +416,6 @@ void UpdateGameplayScreen(void)
                                                             board[neighborY2][neighborX2] > 0)
                                                         {
                                                             --board[neighborY2][neighborX2];
-                                                            //board[neighborY2][neighborX2] = DetectMinesTouchingTile(neighborX2, neighborY2);
                                                         }
                                                     }
                                                 }
@@ -637,7 +645,8 @@ void DrawGameplayScreen(void)
             DrawRectangleLines(boardTile.x, boardTile.y, tileSize, tileSize, tileColor);
             if (textColor.a > 0)
             {
-                DrawTextEx(font, tileTextSymbol, { boardTile.x + tileSize / 3, boardTile.y + tileSize / 10 }, textSize, 0, textColor);
+                DrawTextEx(font, tileTextSymbol, { boardTile.x + tileSize / 3, boardTile.y + tileSize / 10 },
+                           textSize, font.glyphPadding, textColor);
             }
         }
     }
@@ -652,7 +661,7 @@ void DrawGameplayScreen(void)
         gameOverColor = BEIGE;
         gameOverColor.a = 200;
         DrawTextEx(font, "GAME OVER", { screenCenter.x - 180, screenCenter.y - 40 },
-                   font.baseSize*2, 4, gameOverColor);
+                   font.baseSize*2, font.glyphPadding, gameOverColor);
     }
     else if (winCon)
     {
@@ -662,14 +671,14 @@ void DrawGameplayScreen(void)
         victoryColor = BEIGE;
         victoryColor.a = 200;
         DrawTextEx(font, "YOU WON", { screenCenter.x - 180, screenCenter.y - 40 },
-            font.baseSize * 2, 4, victoryColor);
+            font.baseSize * 2, font.glyphPadding, victoryColor);
     }
 
     Vector2 pos = {5,10};
     Color uiBackdropColor = DARKPURPLE;
     uiBackdropColor.a = 100;
     DrawRectangle(0, 0, 40, 40, uiBackdropColor);
-    DrawTextEx(font, "ESC", pos, font.baseSize/2, 4, BEIGE);
+    DrawTextEx(font, "ESC", pos, font.baseSize/2, font.glyphPadding, BEIGE);
 #endif
 }
 
