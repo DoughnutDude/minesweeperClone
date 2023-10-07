@@ -12,16 +12,19 @@ Just a minesweeper clone in raylib made primarily for educational purposes. May 
    - flagging
    - floodfill clearing
    - chording
-   - timer
+   - timer [WIP]
  - Parameterized procedural board generation [WIP]
    - variable board size
    - variable mine density/mine count
    - no-guess gamemode [WIP]
  - Speed-focused style multiplayer (inspired by Tetris/Tetris99) [WIP]
-   - health points?
    - mid-match continuous board generation? [WIP]
    - scoring system? [WIP]
    - TBD
+ - Misc
+   - health points?
+   - rebinding keys? [WIP]
+   - controller support? [WIP]
 
 ### Controls
 
