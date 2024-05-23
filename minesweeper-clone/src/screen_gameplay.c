@@ -41,7 +41,7 @@ global_var int finishResult = 0;
 global_var float dt = 0.0f;
 
 bool winCon;
-int hp = 1;
+int hp = startingHP;
 int actionCount = 0;
 
 Vector2 screenCenter = { 0 };
@@ -51,8 +51,8 @@ Rectangle player = { 0 };
 
 int mineCount = 0;
 int maxMines = 0;
-int board[maxBoardHeight][maxBoardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
-int boardMask[maxBoardHeight][maxBoardWidth] = { 0 }; // 0 = revealed, 1 = hidden, 2 = flagged
+//int board[maxBoardHeight][maxBoardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
+//int boardMask[maxBoardHeight][maxBoardWidth] = { 0 }; // 0 = revealed, 1 = hidden, 2 = flagged
 Rectangle boardRect = { 0 };
 float tileSize = 40.0f;
 Vector2 boardCenter = { 0 };
@@ -229,7 +229,7 @@ void InitGameplayScreen(void)
     dt = GetFrameTime();
 
     winCon = false;
-    hp = 100;
+    hp = startingHP;
     actionCount = 0;
 
     screenCenter.x = (float)GetScreenWidth() / 2.0f;
@@ -266,6 +266,7 @@ void InitGameplayScreen(void)
     {
         for (int x = 0; x < boardWidth; ++x)
         {
+            board[y][x] = 0;     // Clear board every time we load in.
             boardMask[y][x] = 1; // Set this to 0 to start with board revealed.
         }
     }
@@ -340,7 +341,14 @@ void UpdateGameplayScreen(void)
     else if (camera.zoom < 0.1f) camera.zoom = 0.1f;
 #endif
 
-    if (IsKeyPressed(KEY_R)) cameraPos = boardCenter;
+    if (IsKeyPressed(KEY_R))
+    {
+        if (IsKeyDown(KEY_LEFT_CONTROL))
+        {
+            InitGameplayScreen();
+        }
+        cameraPos = boardCenter;
+    }
     camera.target = cameraPos;
 
 #if 0
@@ -656,22 +664,26 @@ void DrawGameplayScreen(void)
     if (hp <= 0) // Lose screen
     {
         Color gameOverColor = MAROON;
-        gameOverColor.a = 100;
+        gameOverColor.a = 200;
         DrawRectangle(screenCenter.x - 200, screenCenter.y - 50, 400, 100, gameOverColor );
         gameOverColor = BEIGE;
-        gameOverColor.a = 200;
-        DrawTextEx(font, "GAME OVER", { screenCenter.x - 180, screenCenter.y - 40 },
+        gameOverColor.a = 240;
+        DrawTextEx(font, "GAME OVER", { screenCenter.x - 180, screenCenter.y - 50 },
                    font.baseSize*2, font.glyphPadding, gameOverColor);
+        DrawTextEx(font, "ctrl+r to restart", { screenCenter.x - 180, screenCenter.y + 10 },
+            font.baseSize, font.glyphPadding, gameOverColor);
     }
     else if (winCon)
     {
         Color victoryColor = DARKPURPLE;
-        victoryColor.a = 100;
+        victoryColor.a = 200;
         DrawRectangle(screenCenter.x - 200, screenCenter.y - 50, 400, 100, victoryColor);
         victoryColor = BEIGE;
-        victoryColor.a = 200;
-        DrawTextEx(font, "YOU WON", { screenCenter.x - 180, screenCenter.y - 40 },
+        victoryColor.a = 240;
+        DrawTextEx(font, "YOU WON", { screenCenter.x - 180, screenCenter.y - 50 },
             font.baseSize * 2, font.glyphPadding, victoryColor);
+        DrawTextEx(font, "ctrl+r to restart", { screenCenter.x - 180, screenCenter.y + 10 },
+            font.baseSize, font.glyphPadding, victoryColor);
     }
 
     Vector2 pos = {5,10};

@@ -6,6 +6,10 @@ int boardWidth = 30;
 int mineDensity = 20;
 int minesDesired = 99;
 bool mineGenMode = 1; // 0 = by density, 1 = til mineCount
+int startingHP = 1;
+
+int board[maxBoardHeight][maxBoardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
+int boardMask[maxBoardHeight][maxBoardWidth] = { 0 }; // 0 = revealed, 1 = hidden, 2 = flagged
 
 void DrawButton(Button button, int textOffsetX, int textOffsetY)
 {

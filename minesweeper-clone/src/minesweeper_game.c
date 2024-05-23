@@ -78,6 +78,7 @@ int main(void)
     //music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
     //printf("%s\n%s\n", GetApplicationDirectory(), GetWorkingDirectory());
+    //SetWindowOpacity(0.9f);
     ChangeDirectory(GetApplicationDirectory());
 
     SetMusicVolume(music, 1.0f);

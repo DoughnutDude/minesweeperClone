@@ -46,6 +46,7 @@ _TODO: Show your game to the world, animated GIFs recommended!._
 ### Developers
 
  - DoughnutDude - Developer/Designer
+ - Made with [raylib](https://github.com/raysan5/raylib) and [raylib game template](https://github.com/raysan5/raylib-game-template)
 
 ### Links
 

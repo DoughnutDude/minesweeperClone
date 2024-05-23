@@ -41,7 +41,7 @@ GameScreen previousScreen;
 
 
 #define buttonCount 5
-#define textBoxCount 3
+#define textBoxCount 4
 union {
     struct {
         Button resumeButton;
@@ -50,6 +50,7 @@ union {
         Button mainMenuButton;
         Button quitButton;
 
+        TextBox startingHP;
         TextBox boardWidth;
         TextBox boardHeight;
         TextBox mineCap;
@@ -100,6 +101,9 @@ void InitOptionsScreen(void)
         menu.textBoxes[i].button.textColor = BEIGE;
         //menu.textBoxes[i].button.textColor -= {10,10,10,0};
     }
+    menu.startingHP.button.text = "Starting HP: ";
+    menu.startingHP.value[0] = (char)(startingHP / 10 + 48);
+    menu.startingHP.value[1] = (char)(startingHP % 10 + 48);
     menu.boardWidth.button.text = "Board Width: ";
     menu.boardWidth.value[0] = (char)(boardWidth / 10 + 48);
     menu.boardWidth.value[1] = (char)(boardWidth % 10 + 48);
@@ -122,7 +126,7 @@ void UpdateOptionsScreen(void)
     Vector2 mousePos = GetMousePosition();
     if (clickL)
     {
-        if (CheckCollisionPointRec(GetMousePosition(), menu.boardWidth.button.rect))
+        if (CheckCollisionPointRec(GetMousePosition(), menu.startingHP.button.rect))
         {
             textBoxFocus = 1;
             digits[0] = 0;
@@ -130,7 +134,7 @@ void UpdateOptionsScreen(void)
             digitCount = 0;
             digitCap = 2;
         }
-        else if (CheckCollisionPointRec(GetMousePosition(), menu.boardHeight.button.rect))
+        else if (CheckCollisionPointRec(GetMousePosition(), menu.boardWidth.button.rect))
         {
             textBoxFocus = 2;
             digits[0] = 0;
@@ -138,9 +142,17 @@ void UpdateOptionsScreen(void)
             digitCount = 0;
             digitCap = 2;
         }
-        else if (CheckCollisionPointRec(GetMousePosition(), menu.mineCap.button.rect))
+        else if (CheckCollisionPointRec(GetMousePosition(), menu.boardHeight.button.rect))
         {
             textBoxFocus = 3;
+            digits[0] = 0;
+            digits[1] = 0;
+            digitCount = 0;
+            digitCap = 2;
+        }
+        else if (CheckCollisionPointRec(GetMousePosition(), menu.mineCap.button.rect))
+        {
+            textBoxFocus = 4;
             digits[0] = 0;
             digits[1] = 0;
             digits[2] = 0;
@@ -162,6 +174,7 @@ void UpdateOptionsScreen(void)
                 boardHeight = 16;
                 mineDensity = 20;
                 minesDesired = 99;
+                startingHP = 1;
                 PlaySound(fxCoin);
             }
             else if (CheckCollisionPointRec(mousePos, menu.mineGenMode.rect))
@@ -207,12 +220,15 @@ void UpdateOptionsScreen(void)
         switch (textBoxFocus)
         {
         case 1:
-            boardWidth = digits[0]*powInt(10,digitCount-1) + digits[1];
+            startingHP = digits[0] * powInt(10, digitCount - 1) + digits[1];
             break;
         case 2:
-            boardHeight = digits[0]*powInt(10,digitCount-1) + digits[1];
+            boardWidth = digits[0]*powInt(10,digitCount-1) + digits[1];
             break;
         case 3:
+            boardHeight = digits[0]*powInt(10,digitCount-1) + digits[1];
+            break;
+        case 4:
             if (mineGenMode == 0)
             {
                 mineDensity = digits[0] * powInt(10, digitCount - 1) + digits[1];
@@ -224,10 +240,14 @@ void UpdateOptionsScreen(void)
             break;
         }
     }
+    menu.startingHP.value[0] = (char)(startingHP / 10 + 48);
+    menu.startingHP.value[1] = (char)(startingHP % 10 + 48);
     menu.boardWidth.value[0] = (char)(boardWidth / 10 + 48);
     menu.boardWidth.value[1] = (char)(boardWidth % 10 + 48);
     menu.boardHeight.value[0] = (char)(boardHeight / 10 + 48);
     menu.boardHeight.value[1] = (char)(boardHeight % 10 + 48);
+    if (startingHP < 1) startingHP = 1;
+    if (startingHP > 100) startingHP = 100;
     if (boardWidth < 3) boardWidth = 3;
     if (boardWidth > maxBoardWidth) boardWidth = maxBoardHeight;
     if (boardHeight < 3) boardHeight = 3;

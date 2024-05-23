@@ -78,6 +78,10 @@ extern int boardWidth;
 extern int mineDensity;
 extern int minesDesired;
 extern bool mineGenMode; // 0 = by density, 1 = til maxMineCount
+extern int startingHP;
+
+extern int board[maxBoardHeight][maxBoardWidth]; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
+extern int boardMask[maxBoardHeight][maxBoardWidth]; // 0 = revealed, 1 = hidden, 2 = flagged
 
 #ifdef __cplusplus
 extern "C" {            // Prevents name mangling of functions
