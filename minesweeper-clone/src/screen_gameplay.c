@@ -227,6 +227,8 @@ void InitGameplayScreen(void)
     framesCounter = 0;
     finishResult = 0;
     dt = GetFrameTime();
+    timeStart = 0;
+    timer = 0;
 
     winCon = false;
     hp = startingHP;
@@ -312,6 +314,10 @@ void UpdateGameplayScreen(void)
 #if 1
     ++framesCounter;
     dt = GetFrameTime();
+    if (!winCon && (hp > 0) && (timer < 10000) && timeStart)
+    {
+        timer = GetTime() - timeStart;
+    }
 
     screenCenter.x = (float)GetScreenWidth() / 2;
     screenCenter.y = (float)GetScreenHeight() / 2;
@@ -360,7 +366,7 @@ void UpdateGameplayScreen(void)
     // Mouse capture
     if (hp > 0)
     {
-        if (IsKeyPressed(KEY_P))
+        if (IsKeyPressed(KEY_P)) // Reveals entire board.
         {
             for (int y = 0; y < boardHeight; ++y)
             {
@@ -384,6 +390,11 @@ void UpdateGameplayScreen(void)
 
                 if (clickL && boardMask[y][x] == 1)
                 {
+                    if (!timeStart)
+                    {
+                        timeStart = GetTime();
+                        printf("bepis\n");//debug output
+                    }
                     ++actionCount;
                     printf("ac %d\n", actionCount);//debug output
                     if (actionCount == 1) // Move mines away from first click and its adjacent tiles.
@@ -691,6 +702,18 @@ void DrawGameplayScreen(void)
     uiBackdropColor.a = 100;
     DrawRectangle(0, 0, 40, 40, uiBackdropColor);
     DrawTextEx(font, "ESC", pos, font.baseSize/2, font.glyphPadding, BEIGE);
+
+
+    // Draw timer
+    Color timerColor = DARKPURPLE;
+    timerColor.a = 200;
+    DrawRectangle(GetScreenWidth() - 100, 0, 100, 36, timerColor);
+    timerColor = BEIGE;
+    timerColor.a = 240;
+    char buffer[256];
+    sprintf(buffer, "%04d\n", (int)timer);
+    DrawTextEx(font, buffer, { GetScreenWidth() - 90.f, 2.f },
+        font.baseSize, font.glyphPadding, timerColor);
 #endif
 }
 

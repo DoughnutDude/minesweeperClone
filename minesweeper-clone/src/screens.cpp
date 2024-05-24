@@ -7,6 +7,8 @@ int mineDensity = 20;
 int minesDesired = 99;
 bool mineGenMode = 1; // 0 = by density, 1 = til mineCount
 int startingHP = 1;
+float timeStart = 0;
+float timer = 0;
 
 int board[maxBoardHeight][maxBoardWidth] = { 0 }; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
 int boardMask[maxBoardHeight][maxBoardWidth] = { 0 }; // 0 = revealed, 1 = hidden, 2 = flagged
