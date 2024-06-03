@@ -83,7 +83,7 @@ extern float timer;
 extern float timeStart;
 
 extern int board[maxBoardHeight][maxBoardWidth]; // -2 = mine(clicked on), -1 = mine, non-negative = number of adjacent mines
-extern int boardMask[maxBoardHeight][maxBoardWidth]; // 0 = revealed, 1 = hidden, 2 = flagged
+extern int boardMask[maxBoardHeight][maxBoardWidth]; // 0 = revealed, 1 = hidden, 2 = flagged, -1 = incorrectly flagged (only used for game lose screen)
 
 #ifdef __cplusplus
 extern "C" {            // Prevents name mangling of functions

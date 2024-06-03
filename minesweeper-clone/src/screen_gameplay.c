@@ -543,6 +543,11 @@ void UpdateGameplayScreen(void)
                 {
                     boardMask[y][x] = 0;
                 }
+                else if ((board[y][x] >= 0) && boardMask[y][x] == 2)
+                {
+                    // All incorrectly flagged spaces should also be revealed.
+                    boardMask[y][x] = -1;
+                }
             }
         }
     }
@@ -579,12 +584,12 @@ void DrawGameplayScreen(void)
     {
         for (int x = 0; x < boardWidth; ++x)
         {
-            Rectangle boardTile = MakeRectFromTile(x,y);
+            Rectangle boardTile = MakeRectFromTile(x, y);
             Color tileColor = { 120,120,120,255 };
             Color textColor = BLACK;
             char tileTextSymbol[4];
 
-            if (boardMask[y][x] > 0) // Draw hidden tile
+            if (boardMask[y][x] > 0) // Draw hidden tiles
             {
                 textColor = { 0,0,0,0 };
                 if (!(clickL && CheckCollisionPointRec(mousePos, boardTile)))
@@ -592,7 +597,7 @@ void DrawGameplayScreen(void)
                     tileColor = { 150,150,150,255 };
                     if (boardMask[y][x] == 2)
                     {
-                        sprintf(tileTextSymbol, "X\n");
+                        sprintf(tileTextSymbol, "F\n");
                         textColor = BROWN; // Draw flag
                     }
                 }
@@ -617,7 +622,7 @@ void DrawGameplayScreen(void)
                     }
                 }
             }
-            else // Comment out this line to see tile values through the mask.
+            else if (boardMask[y][x] == 0) // Draw revealed tiles
             {
                 sprintf(tileTextSymbol, "%d\n", board[y][x]);
                 switch (board[y][x])
@@ -626,7 +631,7 @@ void DrawGameplayScreen(void)
                     tileColor = DARKBROWN;
                 case -1:
                     textColor = { 255,255,255,255 };
-                    sprintf(tileTextSymbol, "X\n");
+                    sprintf(tileTextSymbol, "#\n");
                     break;
                 case 0:
                     textColor = { 0,0,0,0 };
@@ -657,6 +662,12 @@ void DrawGameplayScreen(void)
                     break;
                 }
             }
+            else // Draw incorrectly flagged tiles when the game ends.
+            {
+                tileColor = { 150,150,150,255 };
+                textColor = RED;
+                sprintf(tileTextSymbol, "X\n");
+            }
             DrawRectangle(boardTile.x, boardTile.y, tileSize, tileSize, tileColor);
             tileColor.r -= 20;
             tileColor.g -= 20;
@@ -665,7 +676,7 @@ void DrawGameplayScreen(void)
             if (textColor.a > 0)
             {
                 DrawTextEx(font, tileTextSymbol, { boardTile.x + tileSize / 3, boardTile.y + tileSize / 10 },
-                           textSize, font.glyphPadding, textColor);
+                    textSize, font.glyphPadding, textColor);
             }
         }
     }

@@ -35,12 +35,15 @@ Mouse:
 
 Keyboard:
  - WASD: Camera/screen movement
+ - Ctrl + R: Start new board
+ - P: Reveal board (DEBUG)
  - ESC: Options menu
 
 ### Screenshots
 
 _TODO: Show your game to the world, animated GIFs recommended!._
 ![(Options Screen)](./minesweeper-clone/screenshots/screenshot003.png "Options Screen")
+![(Game Over)](./minesweeper-clone/screenshots/screenshot004.png "Game Over")
 
 
 ### Developers

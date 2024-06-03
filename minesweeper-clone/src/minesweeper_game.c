@@ -4,7 +4,7 @@
 *
 *   Game title: Minesweeper Clone
 *   Game description: <Game description>
-*       Copyright (c) 2023 (DoughnutDude)
+*       Copyright (c) 2024 (DoughnutDude)
 *
 *   This game has been created using raylib (www.raylib.com)
 *   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
@@ -15,7 +15,7 @@
 
 /**********************************************************************************************
 *   Modified from the original software for use in Minesweeper Clone
-*   Copyright (c) 2023 (DoughnutDude)
+*   Copyright (c) 2024 (DoughnutDude)
 **********************************************************************************************/
 
 #include "raylib.h"
