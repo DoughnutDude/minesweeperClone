@@ -454,14 +454,14 @@ void UpdateGameplayScreen(void)
                 {
                     if (boardMask[y][x] == 1)
                     {
-                        ++actionCount;
-                        printf("ac %d\n", actionCount);//debug output
+                        //++actionCount;
+                        //printf("ac %d\n", actionCount);//debug output
                         boardMask[y][x] = 2;
                     }
                     else if (boardMask[y][x] == 2)
                     {
-                        ++actionCount;
-                        printf("ac %d\n", actionCount);//debug output
+                        //++actionCount;
+                        //printf("ac %d\n", actionCount);//debug output
                         boardMask[y][x] = 1;
                     }
                 }
@@ -665,7 +665,7 @@ void DrawGameplayScreen(void)
             else // Draw incorrectly flagged tiles when the game ends.
             {
                 tileColor = { 150,150,150,255 };
-                textColor = RED;
+                textColor = DARKBROWN;
                 sprintf(tileTextSymbol, "X\n");
             }
             DrawRectangle(boardTile.x, boardTile.y, tileSize, tileSize, tileColor);
