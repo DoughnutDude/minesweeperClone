@@ -12,7 +12,7 @@ Just a minesweeper clone in raylib made primarily for educational purposes. May 
    - flagging
    - floodfill clearing
    - chording
-   - timer [WIP]
+   - timer
  - Parameterized procedural board generation [WIP]
    - variable board size
    - variable mine density/mine count
@@ -22,9 +22,8 @@ Just a minesweeper clone in raylib made primarily for educational purposes. May 
    - scoring system? [WIP]
    - TBD
  - Misc
-   - health points?
+   - health points
    - rebinding keys? [WIP]
-   - controller support? [WIP]
 
 ### Controls
 
@@ -36,18 +35,17 @@ Mouse:
 Keyboard:
  - WASD: Camera/screen movement
  - Ctrl + R: Start new board
- - P: Reveal board (DEBUG)
+ - P: Reveal board (for DEBUG purposes)
  - ESC: Options menu
 
  Notation:
  - F = flag
  - 1-8 = number of adjacent mines
- - # = mine
+ - \# = mine
  - X = incorrect flag
 
 ### Screenshots
 
-_TODO: Show your game to the world, animated GIFs recommended!._
 ![(Options Screen)](./minesweeper-clone/screenshots/screenshot003.png "Options Screen")
 ![(Game Over)](./minesweeper-clone/screenshots/screenshot004.png "Game Over")
 
