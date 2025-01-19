@@ -39,6 +39,12 @@ Keyboard:
  - P: Reveal board (DEBUG)
  - ESC: Options menu
 
+ Notation:
+ - F = flag
+ - 1-8 = number of adjacent mines
+ - # = mine
+ - X = incorrect flag
+
 ### Screenshots
 
 _TODO: Show your game to the world, animated GIFs recommended!._
